@@ -1,50 +1,394 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="de">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead
+			title="UNFRAMED | Coming soon"
+			description="UNFRAMED ist ein neuer Kanal ueber Medienmechaniken. Start folgt auf unframed.report."
+		/>
 	</head>
 	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to <a href="https://docs.astro.build/"
-					>read the docs
-				</a> or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out <a
-					href="https://github.com/Charca/astro-blog-template"
-					>astro-blog-template
-				</a> by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+		<main class="landing">
+			<div class="noise"></div>
+			<div class="halo halo-a" aria-hidden="true"></div>
+			<div class="halo halo-b" aria-hidden="true"></div>
+			<section class="stage">
+				<p class="eyebrow">unframed.report</p>
+				<h1 class="brand">
+					<span class="part-un">UN</span><span class="part-framed">FRAMED</span>
+				</h1>
+				<p class="lead">Media. Decoded.</p>
+				<p class="meta">Ein neuer YouTube-Kanal entsteht gerade in Rom.</p>
+				<p class="teaser">Sichere dir den fruehen Hinweis zum Start.</p>
+
+				<form class="waitlist" aria-label="Warteliste" id="waitlist-form" method="post" action="/api/waitlist">
+					<label for="email" class="sr-only">E-Mail fuer die Warteliste</label>
+					<input
+						id="email"
+						name="email"
+						type="email"
+						placeholder="deine@email.de"
+						required
+						inputmode="email"
+						autocomplete="email"
+					/>
+					<input type="text" name="company" tabindex="-1" autocomplete="off" class="trap" />
+					<input type="hidden" name="startedAt" id="started-at" />
+					<button type="submit">Warteliste</button>
+				</form>
+				<p class="hint" id="waitlist-hint" aria-live="polite">Keine Werbung. Nur ein kurzes Launch-Update.</p>
+
+				<footer class="legal">
+					<a href="/impressum">Impressum</a>
+					<span aria-hidden="true">·</span>
+					<a href="/datenschutz">Datenschutz</a>
+				</footer>
+			</section>
 		</main>
-		<Footer />
 	</body>
 </html>
+
+<script>
+	const waitlistForm = document.getElementById('waitlist-form');
+	const waitlistHint = document.getElementById('waitlist-hint');
+	const startedAtInput = document.getElementById('started-at');
+
+	if (startedAtInput instanceof HTMLInputElement) {
+		startedAtInput.value = String(Date.now());
+	}
+
+	if (waitlistForm instanceof HTMLFormElement && waitlistHint) {
+		waitlistForm.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			const formData = new FormData(waitlistForm);
+			const submitButton = waitlistForm.querySelector('button[type="submit"]');
+			if (submitButton instanceof HTMLButtonElement) submitButton.disabled = true;
+
+			try {
+				const response = await fetch('/api/waitlist', {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({
+						email: formData.get('email'),
+						company: formData.get('company'),
+						startedAt: formData.get('startedAt'),
+					}),
+				});
+
+				const payload = await response.json();
+				waitlistHint.textContent = String(payload.message ?? 'Bitte spaeter erneut versuchen.');
+
+				if (response.ok) {
+					waitlistForm.reset();
+					if (startedAtInput instanceof HTMLInputElement) {
+						startedAtInput.value = String(Date.now());
+					}
+				}
+			} catch {
+				waitlistHint.textContent = 'Verbindung fehlgeschlagen. Bitte spaeter erneut versuchen.';
+			} finally {
+				if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
+			}
+		});
+	}
+</script>
+
+<style>
+	:global(*) {
+		box-sizing: border-box;
+	}
+
+	:global(body) {
+		--bg-950: #05070d;
+		--bg-900: #0a0f1a;
+		--text-100: #f7f9fc;
+		--text-300: #d8dfeb;
+		--text-500: #9aa5b6;
+		--accent: #ff3f20;
+		--accent-strong: #ff6a48;
+		--focus: #ffcbc0;
+		min-height: 100vh;
+		margin: 0;
+		color: var(--text-100);
+		background:
+			radial-gradient(1200px 620px at 12% 0%, rgba(255, 63, 32, 0.25), transparent 62%),
+			radial-gradient(1100px 700px at 88% 98%, rgba(26, 79, 182, 0.3), transparent 62%),
+			var(--bg-950);
+		font-size: 16px;
+	}
+
+	.landing {
+		position: relative;
+		min-height: 100vh;
+		overflow: hidden;
+		padding: clamp(0.8rem, 2.4vw, 2.2rem);
+		display: grid;
+		place-items: center;
+		width: 100%;
+		max-width: none;
+		margin: 0;
+	}
+
+	.noise {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background-image: radial-gradient(rgba(255, 255, 255, 0.07) 0.6px, transparent 0.6px);
+		background-size: 3px 3px;
+		opacity: 0.22;
+	}
+
+	.halo {
+		position: absolute;
+		border-radius: 999px;
+		filter: blur(50px);
+		pointer-events: none;
+	}
+
+	.halo-a {
+		width: min(65vw, 780px);
+		height: min(65vw, 780px);
+		left: -12vw;
+		top: -16vw;
+		background: rgba(255, 63, 32, 0.2);
+	}
+
+	.halo-b {
+		width: min(72vw, 920px);
+		height: min(72vw, 920px);
+		right: -20vw;
+		bottom: -22vw;
+		background: rgba(54, 108, 219, 0.2);
+	}
+
+	.stage {
+		position: relative;
+		width: min(1480px, calc(100vw - 2rem));
+		padding: clamp(1.3rem, 2.6vw, 3rem) clamp(1.1rem, 2.2vw, 2.6rem);
+		border: 2px solid rgba(255, 106, 72, 0.7);
+		border-radius: 18px;
+		background:
+			linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+			linear-gradient(145deg, rgba(255, 63, 32, 0.09), rgba(0, 0, 0, 0));
+		box-shadow:
+			0 26px 80px rgba(0, 0, 0, 0.56),
+			0 0 0 1px rgba(255, 106, 72, 0.35),
+			0 0 48px rgba(255, 63, 32, 0.22);
+		backdrop-filter: blur(8px);
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(320px, 430px);
+		column-gap: clamp(1.2rem, 3.2vw, 4rem);
+		row-gap: 0.7rem;
+		align-items: end;
+	}
+
+	.eyebrow {
+		margin: 0;
+		font-size: clamp(0.72rem, 1.3vw, 0.84rem);
+		letter-spacing: 0.22em;
+		text-transform: uppercase;
+		color: var(--text-500);
+	}
+
+	.brand {
+		margin: clamp(0.5rem, 2.2vw, 1rem) 0 0;
+		margin-top: clamp(2.5rem, 6vw, 5rem);
+		line-height: 0.84;
+		text-transform: uppercase;
+		grid-column: 1 / 2;
+	}
+
+	.brand span {
+		display: inline-block;
+		font-size: clamp(2.6rem, 10.2vw, 8.6rem);
+		font-weight: 700;
+		letter-spacing: 0.065em;
+		text-shadow:
+			0 12px 28px rgba(255, 63, 32, 0.26),
+			0 2px 0 rgba(255, 255, 255, 0.1);
+		overflow-wrap: anywhere;
+	}
+
+	.part-un {
+		color: var(--text-100);
+	}
+
+	.part-framed {
+		color: var(--accent-strong);
+	}
+
+	.lead {
+		margin: clamp(-2rem, 0.6vw, 0.08rem) 0 0;
+		font-size: clamp(1rem, 2.8vw, 1.55rem);
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.16em;
+		color: var(--accent-strong);
+		grid-column: 1 / 2;
+		position: relative;
+		top: -1.5rem;
+	}
+
+	.meta {
+		margin: 0.75rem 0 0;
+		max-width: 42ch;
+		font-size: clamp(1rem, 1.8vw, 1.14rem);
+		line-height: 1.6;
+		color: var(--text-300);
+		grid-column: 1 / 2;
+	}
+
+	.teaser {
+		margin: 0.45rem 0 0;
+		font-size: 0.92rem;
+		color: var(--text-500);
+		grid-column: 1 / 2;
+	}
+
+	.waitlist {
+		margin-top: 0;
+		display: flex;
+		gap: 0.72rem;
+		flex-wrap: wrap;
+		position: relative;
+		max-width: 100%;
+		grid-column: 2 / 3;
+		align-self: end;
+	}
+
+	.waitlist input:not(.trap) {
+		flex: 1 1 280px;
+		min-height: 50px;
+		padding: 0.8rem 0.95rem;
+		border: 1px solid rgba(255, 255, 255, 0.25);
+		border-radius: 9px;
+		background: linear-gradient(180deg, rgba(8, 12, 20, 0.88), rgba(14, 20, 31, 0.88));
+		color: var(--text-100);
+		font-size: 1rem;
+		transition: border-color 120ms ease, box-shadow 120ms ease;
+	}
+
+	.waitlist input:not(.trap)::placeholder {
+		color: var(--text-500);
+	}
+
+	.waitlist input:not(.trap):focus-visible {
+		outline: none;
+		border-color: var(--focus);
+		box-shadow: 0 0 0 3px rgba(255, 203, 192, 0.25);
+	}
+
+	.waitlist button {
+		min-height: 50px;
+		padding: 0.8rem 1.25rem;
+		border: 1px solid var(--accent);
+		border-radius: 9px;
+		background: linear-gradient(180deg, var(--accent-strong), var(--accent));
+		color: #1d130c;
+		font-size: 0.92rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		cursor: pointer;
+		transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+	}
+
+	.waitlist button:hover {
+		transform: translateY(-1px);
+		filter: brightness(1.03);
+		box-shadow: 0 12px 24px rgba(255, 63, 32, 0.3);
+	}
+
+	.waitlist button:focus-visible {
+		outline: none;
+		box-shadow: 0 0 0 3px rgba(255, 203, 192, 0.35);
+	}
+
+	.waitlist button:disabled {
+		opacity: 0.75;
+		cursor: wait;
+		transform: none;
+		box-shadow: none;
+	}
+
+	.hint {
+		margin: 0.7rem 0 0;
+		min-height: 1.2rem;
+		font-size: 0.85rem;
+		color: var(--text-500);
+		grid-column: 2 / 3;
+	}
+
+	.trap {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+		height: 0;
+		width: 0;
+	}
+
+	.legal {
+		margin-top: 1.05rem;
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+		font-size: 0.84rem;
+		color: var(--text-500);
+		grid-column: 2 / 3;
+	}
+
+	.legal a {
+		color: var(--text-300);
+		text-decoration: none;
+		text-underline-offset: 3px;
+	}
+
+	.legal a:hover {
+		color: #ffffff;
+		text-decoration: underline;
+	}
+
+	.legal a:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+		border-radius: 2px;
+	}
+
+	@media (max-width: 760px) {
+		.stage {
+			padding: 1.25rem 1rem 1.2rem;
+			width: min(1480px, calc(100vw - 1rem));
+			grid-template-columns: 1fr;
+			row-gap: 0.5rem;
+		}
+
+		.brand span {
+			letter-spacing: 0.05em;
+		}
+
+		.lead {
+			letter-spacing: 0.11em;
+		}
+
+		.waitlist button {
+			width: 100%;
+		}
+
+		.waitlist,
+		.hint,
+		.legal {
+			grid-column: 1 / -1;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.waitlist button,
+		.waitlist input:not(.trap) {
+			transition: none;
+		}
+	}
+</style>

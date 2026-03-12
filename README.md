@@ -55,6 +55,98 @@ All commands are run from the root of the project, from a terminal:
 | `npm run build && npm run deploy` | Deploy your production site to Cloudflare        |
 | `npm wrangler tail`               | View real-time logs for all Workers              |
 
+## Waitlist (secure)
+
+The landing page form posts to `POST /api/waitlist` server-side.
+No API keys are exposed in the browser.
+
+Security controls included:
+
+- Origin allowlist (`ALLOWED_ORIGINS`)
+- Email format + length validation
+- Honeypot field
+- Minimum submit time check
+- Optional Cloudflare Turnstile verification
+
+### Provider modes
+
+The API route supports three providers:
+
+- `kit` (ConvertKit/Kit API v4)
+- `buttondown`
+- `webhook` (custom fallback)
+
+Set with:
+
+```bash
+wrangler secret put WAITLIST_PROVIDER
+```
+
+Use one of: `kit`, `buttondown`, `webhook`.
+
+If omitted, the route auto-detects by available secrets.
+
+### Kit (ConvertKit)
+
+Required:
+
+```bash
+wrangler secret put WAITLIST_KIT_API_KEY
+```
+
+Optional:
+
+```bash
+wrangler secret put WAITLIST_KIT_FORM_ID
+wrangler secret put WAITLIST_KIT_TAG_ID
+wrangler secret put WAITLIST_KIT_SEQUENCE_ID
+```
+
+### Buttondown
+
+Required:
+
+```bash
+wrangler secret put WAITLIST_BUTTONDOWN_API_KEY
+```
+
+Optional:
+
+```bash
+wrangler secret put WAITLIST_BUTTONDOWN_TAGS
+```
+
+`WAITLIST_BUTTONDOWN_TAGS` is comma-separated, e.g. `launch,unframed`.
+
+### Generic webhook fallback
+
+Required:
+
+```bash
+wrangler secret put WAITLIST_WEBHOOK_URL
+```
+
+Optional:
+
+```bash
+wrangler secret put WAITLIST_WEBHOOK_BEARER_TOKEN
+```
+
+### Origin + bot protection
+
+```bash
+wrangler secret put ALLOWED_ORIGINS
+```
+
+Comma-separated origins, e.g.:
+`https://unframed.report,https://www.unframed.report`
+
+Optional Turnstile:
+
+```bash
+wrangler secret put TURNSTILE_SECRET_KEY
+```
+
 ## 👀 Want to learn more?
 
 Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).

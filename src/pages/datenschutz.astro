@@ -1,0 +1,39 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+---
+
+<!doctype html>
+<html lang="de">
+	<head>
+		<BaseHead title="Datenschutz | Unframed" description="Datenschutz von unframed.report" />
+	</head>
+	<body>
+		<main class="legal-page">
+			<h1>Datenschutz</h1>
+			<p>Diese Seite wird vor dem offiziellen Launch vervollstaendigt.</p>
+			<p>
+				Sobald die Warteliste live ist, folgen hier die vollstaendigen Datenschutzhinweise gemaess
+				DSGVO.
+			</p>
+			<p><a href="/">Zurueck zur Startseite</a></p>
+		</main>
+	</body>
+</html>
+
+<style>
+	:global(body) {
+		margin: 0;
+		min-height: 100vh;
+		background: #0b0c10;
+		color: #eef1f4;
+		font-family: "Atkinson", sans-serif;
+	}
+	.legal-page {
+		width: min(760px, 92vw);
+		margin: 0 auto;
+		padding: 3rem 1rem;
+	}
+	a {
+		color: #ff9d54;
+	}
+</style>
